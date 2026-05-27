@@ -824,27 +824,23 @@ function fmtDue(due){
 // ── API ──
 async function apiLoad(){
   try{
-    const r=await fetch(`${JSONBIN_URL}/${BIN_ID}/latest`,{headers:{'X-Master-Key':JSONBIN_KEY}});
+    const r=await fetch(CF_WORKER,{method:'GET'});
     const d=await r.json();
     return{
-      leads:d.record?.leads||[],
-      columns:d.record?.columns||DEF_COLS,
-      notifications:d.record?.notifications||[],
-      closings:d.record?.closings||[],
-      globalTasks:d.record?.globalTasks||[],
-      customProds:d.record?.customProds||[],
-      customTags:d.record?.customTags||[]
+      leads:d.leads||[],
+      columns:d.columns||DEF_COLS,
+      notifications:d.notifications||[],
+      closings:d.closings||[],
+      globalTasks:d.globalTasks||[],
+      customProds:d.customProds||[],
+      customTags:d.customTags||[]
     };
   }catch(e){showToast('Erro ao carregar.');return{leads:[],columns:DEF_COLS,notifications:[],closings:[],globalTasks:[],customProds:[],customTags:[]};}
 }
 
 async function apiSave(){
   try{
-    await fetch(`${JSONBIN_URL}/${BIN_ID}`,{
-      method:'PUT',
-      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},
-      body:JSON.stringify({leads:allLeads,columns,notifications,closings,globalTasks,customProds,customTags})
-    });
+    await fetch(CF_WORKER,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({leads:allLeads,columns,notifications,closings,globalTasks,customProds,customTags,users:USERS})});
   }catch(e){showToast('Erro ao salvar.');}
 }
 
