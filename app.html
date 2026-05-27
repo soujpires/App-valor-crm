@@ -509,7 +509,7 @@ select.inp-dark{-webkit-appearance:none;appearance:none;}
     <div class="login-sub">Acesse sua conta para continuar</div>
     <div class="fw">
       <label class="lbl">Usuário</label>
-      <input id="l-user" class="inp" type="text" autocomplete="username" placeholder="seu usuário" autocapitalize="none">
+      <input id="l-user" class="inp" type="text" autocomplete="username" placeholder="seu e-mail" autocapitalize="none" type="email" inputmode="email">
     </div>
     <div class="fw">
       <label class="lbl">Senha</label>
@@ -760,13 +760,11 @@ select.inp-dark{-webkit-appearance:none;appearance:none;}
 'use strict';
 
 // ── CONFIG ──
-const JSONBIN_KEY='$2a$10$OX7tMVxdpb9XDGvwEEcw5e48.cIiEGph4wp5pEojGqv.BdLrj.ifC';
-const JSONBIN_URL='https://api.jsonbin.io/v3/b';
-const BIN_ID='6a0bb6386610dd3ae8697787';
+const CF_WORKER='https://valorcrm-api.valor-corretora.workers.dev';
 
-const USERS={
-  admin:    {pass:'nexur2025',name:'Admin',   role:'admin',color:'#2563EB',bg:'#1e3a8a',init:'A'},
-  nalberty: {pass:'nal2025',  name:'Nalberty',role:'user', color:'#059669',bg:'#064e3b',init:'N'}
+let USERS={
+  admin:    {email:'admin@somosvalor.com',   pass:'nexur2025', name:'Admin',    username:'admin',    role:'admin', color:'#2563EB', bg:'#1e3a8a', init:'A'},
+  nalberty: {email:'nalberty@somosvalor.com',pass:'nal2025',   name:'Nalberty', username:'nalberty', role:'user',  color:'#059669', bg:'#064e3b', init:'N'},
 };
 const DEF_COLS=[
   {id:'lead',           name:'Lead',          color:'#F59E0B',fixed:true},
@@ -854,11 +852,15 @@ async function apiSave(){
 document.getElementById('login-btn').addEventListener('click',doLogin);
 document.getElementById('l-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
-function doLogin(){
-  const u=document.getElementById('l-user').value.trim().toLowerCase();
+async function doLogin(){
+  const emailInp=document.getElementById('l-user').value.trim().toLowerCase();
   const p=document.getElementById('l-pass').value;
-  const user=USERS[u];
-  if(!user||user.pass!==p){document.getElementById('login-err').textContent='Usuário ou senha incorretos.';return;}
+  // Tenta buscar usuários atualizados do Worker
+  try{const r=await fetch(CF_WORKER,{method:'GET'});const d=await r.json();if(d.users&&Object.keys(d.users).length>0)USERS=d.users;}catch(e){}
+  const userKey=Object.keys(USERS).find(k=>(USERS[k].email||'').toLowerCase()===emailInp||(USERS[k].username||k)===emailInp);
+  const user=userKey?USERS[userKey]:null;
+  if(!user||user.pass!==p){document.getElementById('login-err').textContent='E-mail ou senha incorretos.';return;}
+  const u=userKey;
   currentUser=u;currentRole=user.role;
   document.getElementById('login-err').textContent='';
   document.getElementById('login-screen').style.display='none';
