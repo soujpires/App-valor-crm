@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Valor CRM">
 <meta name="theme-color" content="#0F172A">
+
+
 <title>Valor CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -758,6 +760,49 @@ select.inp-dark{-webkit-appearance:none;appearance:none;}
 
 <script>
 'use strict';
+
+// ── GERAR APPLE TOUCH ICON VIA CANVAS ──
+(function(){
+  try{
+    const c=document.createElement('canvas');
+    c.width=180;c.height=180;
+    const ctx=c.getContext('2d');
+    // Fundo arredondado
+    const r=40;
+    ctx.beginPath();
+    ctx.moveTo(r,0);ctx.lineTo(180-r,0);ctx.quadraticCurveTo(180,0,180,r);
+    ctx.lineTo(180,180-r);ctx.quadraticCurveTo(180,180,180-r,180);
+    ctx.lineTo(r,180);ctx.quadraticCurveTo(0,180,0,180-r);
+    ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath();
+    const bgGrad=ctx.createLinearGradient(0,0,180,180);
+    bgGrad.addColorStop(0,'#1E293B');bgGrad.addColorStop(1,'#0F172A');
+    ctx.fillStyle=bgGrad;ctx.fill();
+    // Escudo
+    const sg=ctx.createLinearGradient(42,28,138,160);
+    sg.addColorStop(0,'#3B82F6');sg.addColorStop(1,'#1D4ED8');
+    ctx.fillStyle=sg;
+    ctx.beginPath();
+    ctx.moveTo(90,28);ctx.lineTo(42,54);ctx.lineTo(42,98);
+    ctx.bezierCurveTo(42,128,63,152,90,160);
+    ctx.bezierCurveTo(117,152,138,128,138,98);
+    ctx.lineTo(138,54);ctx.closePath();ctx.fill();
+    // Seta branca (V)
+    ctx.strokeStyle='white';ctx.lineWidth=7;
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(70,86);ctx.lineTo(90,114);ctx.lineTo(110,86);ctx.stroke();
+    // Haste
+    ctx.beginPath();ctx.moveTo(90,114);ctx.lineTo(90,132);ctx.stroke();
+    // Aplicar como ícone
+    const url=c.toDataURL('image/png');
+    const l=document.createElement('link');
+    l.rel='apple-touch-icon';l.href=url;
+    document.head.appendChild(l);
+    const l2=document.createElement('link');
+    l2.rel='icon';l2.type='image/png';l2.href=url;
+    document.head.appendChild(l2);
+  }catch(e){}
+})();
 
 // ── CONFIG ──
 const CF_WORKER='https://valorcrm-api.valor-corretora.workers.dev';
